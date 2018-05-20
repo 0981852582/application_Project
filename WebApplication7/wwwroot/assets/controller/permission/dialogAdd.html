@@ -1,0 +1,30 @@
+﻿<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="cancel()" aria-hidden="true">×</button>
+        <h4 class="modal-title custom_align" id="Heading">{{ title }}</h4>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-lg-2">
+                <label>Tiêu đề</label>
+            </div>
+            <div class="col-lg-4">
+                <input type="text" class="form-control" ng-model="model.title" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-lg-2">
+                <label>Mô tả</label>
+            </div>
+            <div class="col-lg-4">
+                <textarea type="text" class="form-control" ng-model="model.description"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" ng-click="submit()">Cập nhật</button>
+        <button type="button" class="btn btn-danger" ng-click="cancel()">Đóng</button>
+    </div>
+</div>
+

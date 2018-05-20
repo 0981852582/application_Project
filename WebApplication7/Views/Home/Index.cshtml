@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="portlet-body">
+    <div class="row">
+        <div class="col-lg-1" style="white-space:nowrap;"> Tìm kiếm</div>
+        <div class="col-lg-3">
+            <input type="text" class="form-control" ng-model="table.search" ng-model-options="{ debounce: 600}" ng-change="table.changeSearch()" />
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <table class="table table-striped table-bordered table-hover dataTable table-checkable order-column" id="table1">
+            <thead>
+                <tr>
+                    <th>
+                        TT
+                    </th>
+                    @*<th class="table-checkbox">
+                            <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
+                                <input type="checkbox" class="group-checkable" data-set="#sample_3 .checkboxes">
+                                <span></span>
+                            </label>
+                        </th>*@
+                    <th tabindex="table1.Title" class="sorting" ng-click="table.changeOrder('Title','table1.Title')"> Tiêu đề </th>
+                    <th> Mô tả </th>
+                    <th> Xem </th>
+                    <th> Cập nhật </th>
+                    <th> Xóa </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="odd gradeX" ng-repeat="item in table.results">
+                    <td>{{table.fromRow + ($index + 1)}}</td>
+                    @*<td>
+                        <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
+                            <input type="checkbox" class="checkboxes" ng-model="item.checked">
+                            <span></span>
+                        </label>
+                    </td>*@
+                    <td style="width:30%;"> {{item.title}} </td>
+                    <td style="width:40%;"> {{item.description}}</td>
+                    <th style="width:10%;">
+                        <button type="button" ng-click="dialogView(item.id)" class="btn btn-default btn-sm">
+                            Xem  <span class="glyphicon glyphicon-eye-open"></span>
+                        </button>
+                    </th>
+                    <th style="width:10%;">
+                        <button type="button" ng-click="dialogUpdate(item.id)" class="btn btn-default btn-sm">
+                            Sửa  <span class="glyphicon glyphicon-edit"></span>
+                        </button>
+                    </th>
+                    <th style="width:10%;">
+                        <button type="button" ng-click="dialogDelete(item.id)" class="btn btn-default btn-sm">
+                            Xóa  <span class="glyphicon glyphicon-remove-sign"></span>
+                        </button>
+                    </th>
+                </tr>
+                <tr class="odd gradeX" ng-if="table.results.length == 0">
+                    <td colspan="10">
+                        Không có bản ghi nào ...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col-lg-4">
+                bản ghi thứ {{table.fromRow}} tới {{table.endRow}} trong tổng {{table.totalItem}}.
+            </div>
+            <div class="col-lg-8" style="text-align:right;">
+                <uib-pagination ng-model="table.currentPage"
+                                ng-change="table.changePagging()"
+                                items-per-page="table.numberPage"
+                                total-items="table.totalItem"
+                                max-size="table.maxSize"
+                                boundary-links="true"></uib-pagination>
+            </div>
+        </div>
+    </div>
+</div>
+
+
