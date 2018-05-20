@@ -53,9 +53,11 @@ namespace WebApplication7.Controllers
                 dataTable.results = data;
 
                 dataTable.endRow = (dataTable.fromRow + data.Count);
+                if (data.Count > 0)
+                    dataTable.fromRow++;
                 return Json(dataTable);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Json(dataTable);
             }
@@ -95,6 +97,15 @@ namespace WebApplication7.Controllers
             {
                 try
                 {
+                    var checkPermissionCode = _context.Permission.FirstOrDefault(x => x.PermissionCode == parameter.PermissionCode.Trim());
+                    if (checkPermissionCode != null)
+                    {
+                        dbContextTransaction.Rollback();
+                        msg.Error = true;
+                        msg.Title = "Mã quyền đã tồn tại.";
+                        return Json(msg);
+                    }
+                    parameter.Status = true;
                     _context.Permission.Add(parameter);
                     _context.SaveChanges();
                     msg.Title = "Thêm mới quyền thành công.";
@@ -105,6 +116,7 @@ namespace WebApplication7.Controllers
                 {
                     dbContextTransaction.Rollback();
                     msg.result = ex;
+                    msg.Error = true;
                     msg.Title = "Thêm mới quyền thất bại";
                     return Json(msg);
                 }

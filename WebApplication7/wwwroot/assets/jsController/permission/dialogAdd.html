@@ -6,10 +6,19 @@
     <div class="modal-body">
         <div class="row">
             <div class="col-lg-2">
-                <label>Tiêu đề</label>
+                Mã Quyền <span class="required"> *</span>
             </div>
             <div class="col-lg-4">
-                <input type="text" class="form-control" ng-model="model.title" />
+                <input type="text" name="permissionCode" class="form-control" ng-model="model.permissionCode" />
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-lg-2">
+                Tiêu đề <span class="required"> *</span>
+            </div>
+            <div class="col-lg-4">
+                <input type="text" name="title" class="form-control" ng-model="model.title" />
             </div>
         </div>
         <br />
@@ -23,7 +32,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary" ng-click="submit()">Cập nhật</button>
+        <button type="button" class="btn btn-primary" ng-click="submit()">Thêm mới</button>
         <button type="button" class="btn btn-danger" ng-click="cancel()">Đóng</button>
     </div>
 </div>

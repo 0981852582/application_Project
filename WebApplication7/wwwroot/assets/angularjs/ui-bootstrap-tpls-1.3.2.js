@@ -4435,10 +4435,10 @@ angular.module('ui.bootstrap.pagination', ['ui.bootstrap.paging'])
   boundaryLinks: false,
   boundaryLinkNumbers: false,
   directionLinks: true,
-  firstText: 'First',
-  previousText: 'Previous',
-  nextText: 'Next',
-  lastText: 'Last',
+  firstText: '<<',
+  previousText: '<',
+  nextText: '>',
+  lastText: '>>',
   rotate: true,
   forceEllipses: false
 })

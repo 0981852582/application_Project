@@ -1,22 +1,10 @@
-﻿var app = angular.module('APP', ['ui.bootstrap', 'ui.router', 'oc.lazyLoad', 'toaster']);
-//config angularjs
-app.config(['$compileProvider', function ($compileProvider) {
-    $compileProvider.debugInfoEnabled(false);
-}]);
-app.config(function ($httpProvider) {
-    $httpProvider.useApplyAsync(1000); //true
-});
-//directive
-// BlockUI
-var BlockUI = function (objects) {
-    App.blockUI({ target: objects.target, boxed: !0, message: objects.message });
-}
-var UnBlockUI = function (objects) {
-    App.unblockUI(objects);
-}
-//controller
-app.controller('CONTROLLER', function ($scope, $rootScope, $http, $uibModal, $timeout, toaster) {
+﻿var app = angular.module('rootApplication', ['ui.bootstrap', 'ui.router', 'oc.lazyLoad', 'toaster']);
+//jsController
+app.controller('mainPermisstion', function ($scope, $rootScope, $http, $uibModal, $timeout, toaster) {
     $scope.init = function () {
+        // required
+        initData($rootScope);
+        //required
         var buildDatatable = function () {
             $scope.table = {
                 search: '',
@@ -93,7 +81,7 @@ app.controller('CONTROLLER', function ($scope, $rootScope, $http, $uibModal, $ti
     $scope.dialogView = function (data) {
         /*begin modal*/
         var modalInstance = $uibModal.open({
-            templateUrl: '../assets/controller/permission/dialogView.html',
+            templateUrl: '../assets/jsController/permission/dialogView.html',
             controller: 'ViewPermission',
             backdrop: 'static',
             size: 'lg',
@@ -108,7 +96,7 @@ app.controller('CONTROLLER', function ($scope, $rootScope, $http, $uibModal, $ti
     $scope.dialogUpdate = function (data) {
         /*begin modal*/
         var modalInstance = $uibModal.open({
-            templateUrl: '../assets/controller/permission/dialogUpdate.html',
+            templateUrl: '../assets/jsController/permission/dialogUpdate.html',
             controller: 'UpdatePermission',
             backdrop: 'static',
             size: 'lg',
@@ -123,26 +111,60 @@ app.controller('CONTROLLER', function ($scope, $rootScope, $http, $uibModal, $ti
     $scope.dialogInsert = function () {
         /*begin modal*/
         var modalInstance = $uibModal.open({
-            templateUrl: '../assets/controller/permission/dialogAdd.html',
+            templateUrl: '../assets/jsController/permission/dialogAdd.html',
             controller: 'InsertPermission',
             backdrop: 'static',
             size: 'lg'
         });
     };
     // call confirm delete
-    $scope.dialogDelete = function (parameter) {
-        var object = {
-            ID: parameter
-        }
-        $http.post('/Home/deletePermission/', object).success(function (rs) {
-            if (rs.error) {
-                toaster.pop("error", "", rs.title, 1000, "");
-            } else {
-                toaster.pop("success", "", rs.title, 1000, "");
-                $rootScope.reload();
+    $scope.dialogDelete = function (parameter,title) {
+        Comfirm("Bạn có chắc chắn muốn xóa quyền [ " + title + " ] ?", function (rs) {
+            if (rs) {
+                var object = {
+                    ID: parameter
+                }
+                $http.post('/Home/deletePermission/', object).success(function (rs) {
+                    if (rs.error) {
+                        toaster.pop("error", "", rs.title, 1000, "");
+                    } else {
+                        toaster.pop("success", "", rs.title, 1000, "");
+                        $rootScope.reload();
+                    }
+                });
             }
         });
     }
+    // validate
+    // object validate form
+    $rootScope.validationOptions = [
+        {
+            Title: 'title',
+            rule: {
+                Required: true,
+                Maxlength: 25
+            },
+            message: {
+                Required: 'Tiêu đề không được để trống.',
+                Maxlength: 'Mã nhà cung cấp không được lớn hơn 25 ký tự.'
+            },
+            Place: 'col-lg-4'
+        },
+        {
+            Title: 'permissionCode',
+            rule: {
+                Required: true,
+                Maxlength: 25,
+                Special: true
+            },
+            message: {
+                Required: 'Mã quyền không được để trống.',
+                Maxlength: 'Mã quyền không được lớn hơn 25 ký tự.',
+                Special: 'Mã quyền không được có ký tự đặc biệt.'
+            },
+            Place: 'col-lg-4'
+        }
+    ];
 });
 app.controller('ViewPermission', function ($scope, $http, $location, $uibModalInstance, $rootScope, parameter, toaster) {
     $scope.init = function () {
@@ -175,6 +197,7 @@ app.controller('UpdatePermission', function ($scope, $http, $location, $uibModal
     $scope.init = function () {
         // declare avaiable
         $scope.title = "Cập nhật quyền."
+        $scope.model = {};
         // getItem
         var callGetItem = function () {
             var object = {
@@ -199,26 +222,26 @@ app.controller('UpdatePermission', function ($scope, $http, $location, $uibModal
     };
     // update permission
     $scope.submit = function () {
-        $http.post('/Home/updatePermission/', $scope.model).success(function (rs) {
-            if (rs.error) {
-                toaster.pop("error", "", rs.title, 1000, "");
-            } else {
-                toaster.pop("success", "", rs.title, 1000, "");
-                $rootScope.reload();
-                $scope.cancel();
+        $rootScope.validateForm($scope.model, function (rs) {
+            if (rs) {
+                $http.post('/Home/updatePermission/', $scope.model).success(function (rs) {
+                    if (rs.error) {
+                        toaster.pop("error", "", rs.title, 1000, "");
+                    } else {
+                        toaster.pop("success", "", rs.title, 1000, "");
+                        $rootScope.reload();
+                        $scope.cancel();
+                    }
+                });
             }
-        });
-        //$rootScope.validateForm($scope.model, function (rs) {
-        //    if (rs) {
-
-        //    }
-        //}, true);
+        }, true);
     }
 });
-app.controller('InsertPermission', function ($scope, $http, $location, $uibModalInstance, $rootScope, parameter, toaster) {
+app.controller('InsertPermission', function ($scope, $http, $location, $uibModalInstance, $rootScope, toaster) {
     $scope.init = function () {
         // declare avaiable
         $scope.title = "Thêm mới quyền."
+        $scope.model = {};
     }
     // call init
     $scope.init();
@@ -228,19 +251,19 @@ app.controller('InsertPermission', function ($scope, $http, $location, $uibModal
     };
     // update permission
     $scope.submit = function () {
-        $http.post('/Home/insertPermission/', $scope.model).success(function (rs) {
-            if (rs.error) {
-                toaster.pop("error", "", rs.title, 1000, "");
-            } else {
-                toaster.pop("success", "", rs.title, 1000, "");
-                $rootScope.reload();
-                $scope.cancel();
+        $rootScope.validateForm($scope.model, function (rs) {
+            if (rs) {
+                $http.post('/Home/insertPermission/', $scope.model).success(function (rs) {
+                    if (rs.error) {
+                        toaster.pop("error", "", rs.title, 1000, "");
+                    } else {
+                        toaster.pop("success", "", rs.title, 1000, "");
+                        $rootScope.reload();
+                        $scope.cancel();
+                    }
+                });
             }
-        });
-        //$rootScope.validateForm($scope.model, function (rs) {
-        //    if (rs) {
+        }, true);
 
-        //    }
-        //}, true);
     }
 });

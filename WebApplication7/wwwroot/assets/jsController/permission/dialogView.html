@@ -6,7 +6,16 @@
     <div class="modal-body">
         <div class="row">
             <div class="col-lg-2">
-                <label>Tiêu đề</label>
+                Mã Quyền <span class="required"> *</span>
+            </div>
+            <div class="col-lg-4">
+                {{model.permissionCode}}
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-lg-2">
+                Tiêu đề <span class="required"> *</span>
             </div>
             <div class="col-lg-4">
                 <textview style="border-bottom:1px red !important">
@@ -30,4 +39,3 @@
         <button type="button" class="btn btn-danger" ng-click="cancel()">Đóng</button>
     </div>
 </div>
-
