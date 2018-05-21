@@ -9,9 +9,17 @@ namespace QUANLYBANHANG.Models
         {
         }
         public DbSet<Permission> Permission { get; set; }
+        public DbSet<MenuBar> MenuBar { get; set; }
+        public DbSet<StatusMenuBar> StatusMenuBar { get; set; }
+        public DbSet<PermissionOfPage> PermissionOfPage { get; set; }
+        public DbSet<MenuOfPage> MenuOfPage { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Permission>().ToTable("Permission");
+            modelBuilder.Entity<MenuBar>().ToTable("MenuBar");
+            modelBuilder.Entity<StatusMenuBar>().ToTable("StatusMenuBar");
+            modelBuilder.Entity<PermissionOfPage>().ToTable("PermissionOfPage");
+            modelBuilder.Entity<MenuOfPage>().ToTable("MenuOfPage");
         }
     }
 }

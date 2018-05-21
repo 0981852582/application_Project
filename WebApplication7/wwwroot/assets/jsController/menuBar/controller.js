@@ -1,13 +1,13 @@
 ﻿var url = {
-    add: '/Permission/insertPermission/',
-    edit: '/Permission/updatePermission/',
-    delete: '/Permission/deletePermission/',
-    getItem: '/Permission/getItemPermission/',
-    getListItem: '/Permission/getListPermission/'
+    add: '/menuBar/insertmenuBar/',
+    edit: '/menuBar/updatemenuBar/',
+    delete: '/menuBar/deletemenuBar/',
+    getItem: '/menuBar/getItemmenuBar/',
+    getListItem: '/menuBar/getListmenuBar/'
 }
 var app = angular.module('rootApplication', ['ui.bootstrap', 'ui.router', 'oc.lazyLoad', 'toaster']);
 //jsController
-app.controller('mainPermisstion', function ($scope, $rootScope, $http, $uibModal, $timeout, toaster) {
+app.controller('mainMenubar', function ($scope, $rootScope, $http, $uibModal, $timeout, toaster) {
     $scope.init = function () {
         // required
         initData($rootScope);
@@ -88,8 +88,8 @@ app.controller('mainPermisstion', function ($scope, $rootScope, $http, $uibModal
     $scope.dialogView = function (data) {
         /*begin modal*/
         var modalInstance = $uibModal.open({
-            templateUrl: '../assets/jsController/permission/dialogView.html',
-            controller: 'ViewPermission',
+            templateUrl: '../assets/jsController/menuBar/dialogView.html',
+            controller: 'ViewMenuBar',
             backdrop: 'static',
             size: 'lg',
             resolve: {
@@ -103,8 +103,8 @@ app.controller('mainPermisstion', function ($scope, $rootScope, $http, $uibModal
     $scope.dialogUpdate = function (data) {
         /*begin modal*/
         var modalInstance = $uibModal.open({
-            templateUrl: '../assets/jsController/permission/dialogUpdate.html',
-            controller: 'UpdatePermission',
+            templateUrl: '../assets/jsController/menuBar/dialogUpdate.html',
+            controller: 'UpdateMenuBar',
             backdrop: 'static',
             size: 'lg',
             resolve: {
@@ -118,8 +118,8 @@ app.controller('mainPermisstion', function ($scope, $rootScope, $http, $uibModal
     $scope.dialogInsert = function () {
         /*begin modal*/
         var modalInstance = $uibModal.open({
-            templateUrl: '../assets/jsController/permission/dialogAdd.html',
-            controller: 'InsertPermission',
+            templateUrl: '../assets/jsController/menuBar/dialogAdd.html',
+            controller: 'InsertMenuBar',
             backdrop: 'static',
             size: 'lg'
         });
@@ -149,31 +149,27 @@ app.controller('mainPermisstion', function ($scope, $rootScope, $http, $uibModal
             Title: 'title',
             rule: {
                 Required: true,
-                Maxlength: 25
+                Maxlength: 255
             },
             message: {
                 Required: 'Tiêu đề không được để trống.',
-                Maxlength: 'Mã nhà cung cấp không được lớn hơn 25 ký tự.'
+                Maxlength: 'Tiêu đề không được lớn hơn 255 ký tự.'
             },
             Place: 'col-lg-4'
         },
         {
-            Title: 'permissionCode',
+            Title: 'url',
             rule: {
                 Required: true,
-                Maxlength: 8,
-                Special: true
             },
             message: {
-                Required: 'Mã quyền không được để trống.',
-                Maxlength: 'Mã quyền không được lớn hơn 8 ký tự.',
-                Special: 'Mã quyền không được có ký tự đặc biệt.'
+                Required: 'Url không được để trống.'
             },
             Place: 'col-lg-4'
         }
     ];
 });
-app.controller('ViewPermission', function ($scope, $http, $location, $uibModalInstance, $rootScope, parameter, toaster) {
+app.controller('ViewMenuBar', function ($scope, $http, $location, $uibModalInstance, $rootScope, parameter, toaster) {
     $scope.init = function () {
         // declare avaiable
         $scope.title = "Xem thông tin quyền."
@@ -200,7 +196,7 @@ app.controller('ViewPermission', function ($scope, $http, $location, $uibModalIn
         $uibModalInstance.dismiss('cancel');
     };
 });
-app.controller('UpdatePermission', function ($scope, $http, $location, $uibModalInstance, $rootScope, parameter, toaster) {
+app.controller('UpdateMenuBar', function ($scope, $http, $location, $uibModalInstance, $rootScope, parameter, toaster) {
     $scope.init = function () {
         // declare avaiable
         $scope.title = "Cập nhật quyền."
@@ -227,7 +223,7 @@ app.controller('UpdatePermission', function ($scope, $http, $location, $uibModal
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
     };
-    // update permission
+    // update menuBar
     $scope.submit = function () {
         $rootScope.validateForm($scope.model, function (rs) {
             if (rs) {
@@ -244,7 +240,7 @@ app.controller('UpdatePermission', function ($scope, $http, $location, $uibModal
         }, true);
     }
 });
-app.controller('InsertPermission', function ($scope, $http, $location, $uibModalInstance, $rootScope, toaster) {
+app.controller('InsertMenuBar', function ($scope, $http, $location, $uibModalInstance, $rootScope, toaster) {
     $scope.init = function () {
         // declare avaiable
         $scope.title = "Thêm mới quyền."
@@ -256,7 +252,7 @@ app.controller('InsertPermission', function ($scope, $http, $location, $uibModal
     $scope.cancel = function () {
         $uibModalInstance.dismiss('cancel');
     };
-    // update permission
+    // update menuBar
     $scope.submit = function () {
         $rootScope.validateForm($scope.model, function (rs) {
             if (rs) {

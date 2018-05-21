@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QUANLYBANHANG.Models;
@@ -9,17 +10,12 @@ using WebApplication7.Models.EntitySQL;
 
 namespace WebApplication7.Controllers
 {
-    public class HomeController : Controller
+    public class PermissionController : Controller
     {
         private readonly AccessContext _context;
-        public HomeController(AccessContext context)
+        public PermissionController(AccessContext context)
         {
             _context = context;
-        }
-        public IActionResult Index()
-        {
-            ViewBag.permission = generalPermissionJavascript(getViewMenuBar("menuBar"));
-            return View();
         }
         public object getListPermission([FromBody] JTable parameter)
         {
@@ -174,81 +170,6 @@ namespace WebApplication7.Controllers
                     return Json(msg);
                 }
             }
-        }
-        public class get
-        {
-            public string TypePermission { get; set; }
-            public bool Status { get; set; }
-        }
-        [HttpGet]
-        public List<get> getViewMenuBar(string abc)
-        {
-            var data = _context.PermissionOfPage.AsNoTracking().Select(x => new get
-            {
-                TypePermission = x.TypePermission,
-                Status = false
-            }).ToList();
-            if (abc != null)
-            {
-                foreach (var item in data)
-                {
-                    if ((_context.MenuOfPage.Count(x => x.TypePermission == item.TypePermission && x.urlCode == abc && x.PermissionCode == "admin")) > 0)
-                    {
-                        item.Status = true;
-                    }
-                }
-            }
-            return data;
-        }
-        [HttpPost]
-        public string generalPermissionJavascript(List<get> list)
-        {
-            var permission = "var permission = {";
-            foreach (var item in list)
-            {
-                permission += item.TypePermission + ":" + item.Status.ToString().ToLower() + ",";
-            }
-            permission += "};";
-            return permission;
-        }
-        public class get1
-        {
-            public string Title { get; set; }
-            public string Url { get; set; }
-            public string urlCode { get; set; }
-            public string PermissionCode { get; set; }
-            public string TypePermission { get; set; }
-        }
-        [HttpGet]
-        public object getViewMenuBar1()
-        {
-            var data = _context.MenuOfPage.Select(x => new get1
-            {
-                urlCode = x.urlCode,
-                PermissionCode = x.PermissionCode,
-                TypePermission = x.TypePermission
-            }).Where(x => x.TypePermission == "access").ToList();
-            foreach (var item in data)
-            {
-                var info = _context.MenuBar.FirstOrDefault(x => x.urlCode == item.urlCode);
-                if (info != null)
-                {
-                    item.Title = info.Title;
-                    item.Url = info.Url;
-                };
-            }
-            return Json(data);
-        }
-        [HttpPost]
-        public string generalPermissionJavascript1(List<get> list)
-        {
-            var permission = "var permission = {";
-            foreach (var item in list)
-            {
-                permission += item.TypePermission + ":" + item.Status.ToString().ToLower() + ",";
-            }
-            permission += "};";
-            return permission;
         }
     }
 }

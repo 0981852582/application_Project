@@ -53,6 +53,9 @@ License: You must have a valid license purchased only from themeforest(the above
 <!-- END HEAD -->
 
 <body ng-app="rootApplication" ng-controller="rootController" class="page-header-fixed page-sidebar-closed-hide-logo page-content-white">
+    <script>
+        @ViewBag.permission
+    </script>
     <toaster-container toaster-options="{'time-out': 1500,'position-class': 'toast-top-right'}"></toaster-container>
     <!-- BEGIN HEADER -->
     <div class="page-header navbar navbar-fixed-top">

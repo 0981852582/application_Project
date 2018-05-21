@@ -2,7 +2,7 @@
 <div class="portlet-body">
     <div class="row">
         <div class="col-lg-6">
-            <font class="caption">Quản lý Quyền.</font>
+            <font class="caption">Quản lý chức năng.</font>
         </div>
         <div class="col-lg-6 right">
             <div class="col-lg-7">
@@ -29,8 +29,9 @@
                         <th>
                             TT
                         </th>
-                        <th tabindex="table1.PermissionCode" class="sorting" ng-click="table.changeOrder('PermissionCode','table1.PermissionCode')"> Mã quyền </th>
                         <th tabindex="table1.Title" class="sorting" ng-click="table.changeOrder('Title','table1.Title')"> Tiêu đề </th>
+                        <th> Địa chỉ truy cập </th>
+
                         <th> Mô tả </th>
                         <th style="white-space: nowrap;"> Trạng thái </th>
                         <th> Xem </th>
@@ -41,8 +42,8 @@
                 <tbody>
                     <tr class="odd gradeX" ng-repeat="item in table.results">
                         <td>{{table.fromRow + $index}}</td>
-                        <td style="width:20%;"> {{item.permissionCode}} </td>
                         <td style="width:20%;"> {{item.title}} </td>
+                        <td style="width:20%;"> {{item.url}} </td>
                         <td style="width:30%;"> {{item.description}}</td>
                         <td style="width:10%;white-space: nowrap;"> {{item.status ? 'Sử dụng' : 'Không sử dụng'}}</td>
                         <th style="width:10%;">

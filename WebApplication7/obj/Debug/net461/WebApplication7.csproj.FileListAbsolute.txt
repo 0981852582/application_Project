@@ -200,7 +200,6 @@ c:\users\chiht\source\repos\WebApplication7\WebApplication7\bin\Debug\net461\Sys
 c:\users\chiht\source\repos\WebApplication7\WebApplication7\bin\Debug\net461\System.Xml.XmlSerializer.dll
 c:\users\chiht\source\repos\WebApplication7\WebApplication7\bin\Debug\net461\System.Xml.XPath.dll
 c:\users\chiht\source\repos\WebApplication7\WebApplication7\bin\Debug\net461\System.Xml.XPath.XDocument.dll
-c:\users\chiht\source\repos\WebApplication7\WebApplication7\obj\Debug\net461\WebApplication7.csprojResolveAssemblyReference.cache
 c:\users\chiht\source\repos\WebApplication7\WebApplication7\obj\Debug\net461\WebApplication7.exe.config
 c:\users\chiht\source\repos\WebApplication7\WebApplication7\obj\Debug\net461\WebApplication7.csproj.CoreCompileInputs.cache
 c:\users\chiht\source\repos\WebApplication7\WebApplication7\obj\Debug\net461\WebApplication7.AssemblyInfoInputs.cache
@@ -332,3 +331,4 @@ C:\Users\chiht\source\repos\WebApplication7\WebApplication7\bin\Debug\net461\Sys
 C:\Users\chiht\source\repos\WebApplication7\WebApplication7\bin\Debug\net461\System.Composition.Hosting.dll
 C:\Users\chiht\source\repos\WebApplication7\WebApplication7\bin\Debug\net461\System.Composition.Runtime.dll
 C:\Users\chiht\source\repos\WebApplication7\WebApplication7\bin\Debug\net461\System.Composition.TypedParts.dll
+C:\Users\chiht\source\repos\WebApplication7\WebApplication7\obj\Debug\net461\WebApplication7.csprojResolveAssemblyReference.cache

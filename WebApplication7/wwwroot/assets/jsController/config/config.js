@@ -35,9 +35,22 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
                 });
             }]
         }
+    }).state('menuBar', {
+        url: "/menuBar",
+        templateUrl: "../../assets/jsController/menuBar/index.html",
+        controller: "mainMenubar",
+        resolve: {
+            deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                return $ocLazyLoad.load({
+                    name: 'lazyLoadApp',
+                    files: [
+                        '../../assets/jsController/menuBar/controller.js'
+                    ]
+                });
+            }]
+        }
     })
 }]);
 //controller
 app.controller('rootController', function ($scope, $state, $rootScope, $http, $uibModal, $timeout, toaster) {
-
 });
