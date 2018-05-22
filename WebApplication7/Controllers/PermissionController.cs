@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QUANLYBANHANG.Models;
@@ -12,13 +10,22 @@ namespace WebApplication7.Controllers
 {
     public class PermissionController : Controller
     {
+        private string urlPermission { get; set; }
         private readonly AccessContext _context;
         public PermissionController(AccessContext context)
         {
             _context = context;
+            urlPermission = "permission";
         }
         public object getListPermission([FromBody] JTable parameter)
         {
+            // check permisstion
+            Message msg = checkPermissionMenu(urlPermission, "Admin", "Access");
+            if (msg.Error)
+            {
+                return Json(msg);
+            }
+            // query
             dataTable dataTable = new dataTable
             {
                 fromRow = (parameter.currentPage - 1) * parameter.numberPage
@@ -63,6 +70,13 @@ namespace WebApplication7.Controllers
         }
         public object getItemPermission([FromBody] ParameterRequest parameter)
         {
+            // check permisstion
+            Message msg = checkPermissionMenu(urlPermission, "Admin", "Access");
+            if (msg.Error)
+            {
+                return Json(msg);
+            }
+            // query
             try
             {
                 var data = _context.Permission.
@@ -86,7 +100,14 @@ namespace WebApplication7.Controllers
 
         public object insertPermission([FromBody] Permission parameter)
         {
-            Message msg = new Message { Error = false };
+            Message msg = checkPermissionMenu(urlPermission, "Admin", "Add");
+            // check permisstion
+            if (msg.Error)
+            {
+                return Json(msg);
+            }
+            // query
+            msg = new Message { Error = false };
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
                 try
@@ -118,7 +139,14 @@ namespace WebApplication7.Controllers
         }
         public object deletePermission([FromBody] Permission parameter)
         {
-            Message msg = new Message { Error = false };
+            Message msg = checkPermissionMenu(urlPermission, "Admin", "Delete");
+            // check permisstion
+            if (msg.Error)
+            {
+                return Json(msg);
+            }
+            // query
+            msg = new Message { Error = false };
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
                 try
@@ -145,7 +173,14 @@ namespace WebApplication7.Controllers
         }
         public object updatePermission([FromBody] Permission parameter)
         {
-            Message msg = new Message { Error = false };
+            Message msg = checkPermissionMenu(urlPermission, "Admin", "Edit");
+            // check permisstion
+            if (msg.Error)
+            {
+                return Json(msg);
+            }
+            // query
+            msg = new Message { Error = false };
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
                 try
@@ -171,5 +206,71 @@ namespace WebApplication7.Controllers
                 }
             }
         }
+        public class getPermissionMenuBarEntity
+        {
+            public string TypePermission { get; set; }
+            public bool Status { get; set; }
+        }
+        [HttpGet]
+        public object getPermissionMenuBar(string urlPage)
+        {
+            Message msg = new Message { Error = false };
+            try
+            {
+                var data = _context.PermissionOfPage.AsNoTracking().Select(x => new getPermissionMenuBarEntity
+                {
+                    TypePermission = x.TypePermission,
+                    Status = false
+                }).ToList();
+                if (urlPage != null)
+                {
+                    foreach (var item in data)
+                    {
+                        if ((_context.MenuOfPage.Count(x => x.TypePermission == item.TypePermission && x.urlCode == urlPage && x.PermissionCode == "admin")) > 0)
+                        {
+                            item.Status = true;
+                        }
+                    }
+                }
+                msg.result = data;
+                msg.Title = "Lấy permission thành công.";
+                return Json(msg);
+            }
+            catch (Exception ex)
+            {
+                msg.result = ex;
+                msg.Title = "Lấy permission thất bại thành công.";
+                return Json(msg);
+            }
+        }
+        public Message checkPermissionMenu(string urlPage, string permission, string type)
+        {
+            Message msg = new Message { Error = false };
+            try
+            {
+                var count = _context.MenuOfPage.Count(x =>
+                        x.PermissionCode == permission
+                        && x.urlCode == urlPage
+                        && x.TypePermission == type);
+                if (count > 0)
+                {
+                    msg.Error = false;
+                }
+                else
+                {
+                    msg.Title = "Lỗi quyền chức năng.";
+                    msg.Error = true;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                msg.Title = "Lỗi quyền chức năng.";
+                msg.result = ex;
+                msg.Error = true;
+            }
+            return msg;
+        }
+
     }
 }

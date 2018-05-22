@@ -1,16 +1,22 @@
-﻿var url = {
-    add: '/menuBar/insertmenuBar/',
-    edit: '/menuBar/updatemenuBar/',
-    delete: '/menuBar/deletemenuBar/',
-    getItem: '/menuBar/getItemmenuBar/',
-    getListItem: '/menuBar/getListmenuBar/'
-}
-var app = angular.module('rootApplication', ['ui.bootstrap', 'ui.router', 'oc.lazyLoad', 'toaster']);
+﻿var app = angular.module('rootApplication', ['ui.bootstrap', 'ui.router', 'oc.lazyLoad', 'toaster']);
 //jsController
 app.controller('mainMenubar', function ($scope, $rootScope, $http, $uibModal, $timeout, toaster) {
+    $rootScope.url = {
+        add: '/menuBar/insertmenuBar/',
+        edit: '/menuBar/updatemenuBar/',
+        delete: '/menuBar/deletemenuBar/',
+        getItem: '/menuBar/getItemmenuBar/',
+        getListItem: '/menuBar/getListmenuBar/'
+    }
     $scope.init = function () {
         // required
-        initData($rootScope);
+        $rootScope.aliasPermission = 'menuBar';
+        initData($rootScope, $http);
+        $rootScope.checkAccessMenuBar($rootScope.aliasPermission, function (rs) {
+            if (!rs) {
+                window.location.href = '';
+            }
+        });
         //required
         var buildDatatable = function () {
             $scope.table = {
@@ -64,7 +70,7 @@ app.controller('mainMenubar', function ($scope, $rootScope, $http, $uibModal, $t
                     target: 'body',
                     message: 'Đang tải...'
                 });
-                $http.post(url.getListItem, this).success(function (rs) {
+                $http.post($rootScope.url.getListItem, this).success(function (rs) {
                     cursor.totalItem = rs.totalItem;
                     cursor.results = rs.results;
                     cursor.fromRow = rs.fromRow;
@@ -131,7 +137,7 @@ app.controller('mainMenubar', function ($scope, $rootScope, $http, $uibModal, $t
                 var object = {
                     ID: parameter
                 }
-                $http.post(url.delete, object).success(function (rs) {
+                $http.post($rootScope.url.delete, object).success(function (rs) {
                     if (rs.error) {
                         toaster.pop("error", "", rs.title, 1000, "");
                     } else {
@@ -178,7 +184,7 @@ app.controller('ViewMenuBar', function ($scope, $http, $location, $uibModalInsta
             var object = {
                 ID: parameter
             }
-            $http.post(url.getItem, object).success(function (rs) {
+            $http.post($rootScope.url.getItem, object).success(function (rs) {
                 $scope.model = rs;
             });
         }
@@ -206,7 +212,7 @@ app.controller('UpdateMenuBar', function ($scope, $http, $location, $uibModalIns
             var object = {
                 ID: parameter
             }
-            $http.post(url.getItem, object).success(function (rs) {
+            $http.post($rootScope.url.getItem, object).success(function (rs) {
                 $scope.model = rs;
             });
         }
@@ -227,7 +233,7 @@ app.controller('UpdateMenuBar', function ($scope, $http, $location, $uibModalIns
     $scope.submit = function () {
         $rootScope.validateForm($scope.model, function (rs) {
             if (rs) {
-                $http.post(url.edit, $scope.model).success(function (rs) {
+                $http.post($rootScope.url.edit, $scope.model).success(function (rs) {
                     if (rs.error) {
                         toaster.pop("error", "", rs.title, 1000, "");
                     } else {
@@ -256,7 +262,7 @@ app.controller('InsertMenuBar', function ($scope, $http, $location, $uibModalIns
     $scope.submit = function () {
         $rootScope.validateForm($scope.model, function (rs) {
             if (rs) {
-                $http.post(url.add, $scope.model).success(function (rs) {
+                $http.post($rootScope.url.add, $scope.model).success(function (rs) {
                     if (rs.error) {
                         toaster.pop("error", "", rs.title, 1000, "");
                     } else {

@@ -49,8 +49,30 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
                 });
             }]
         }
-    })
+        }).state('account', {
+            url: "/account",
+            templateUrl: "../../assets/jsController/account/index.html",
+            controller: "mainAccount",
+            resolve: {
+                deps: ['$ocLazyLoad', function ($ocLazyLoad) {
+                    return $ocLazyLoad.load({
+                        name: 'lazyLoadApp',
+                        files: [
+                            '../../assets/jsController/account/controller.js'
+                        ]
+                    });
+                }]
+            }
+        })
 }]);
 //controller
 app.controller('rootController', function ($scope, $state, $rootScope, $http, $uibModal, $timeout, toaster) {
+    $http.post('/MenuBar/getViewMenuBar').success(function (rs) {
+        if (rs.error) {
+            toaster.pop("error", "", rs.title, 1000, "");
+        } else {
+            $rootScope.listMenuBar = rs.result;
+            console.log(rs.result);
+        }
+    });
 });

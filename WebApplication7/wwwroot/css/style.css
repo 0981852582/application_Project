@@ -17,3 +17,6 @@
 .center {
     text-align: center;
 }
+th{
+    white-space:nowrap;
+}

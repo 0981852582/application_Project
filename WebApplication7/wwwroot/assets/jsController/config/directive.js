@@ -11,9 +11,37 @@
 ]);
 // validateForm
 var $scope;
-var initData = function (rootScope) {
+var initData = function (rootScope,$http) {
     if ($scope == undefined)
         $scope = rootScope;
+    // config permisstion
+    $scope.checkAccessMenuBar = function (url, callback) {
+        if ($scope.listMenuBar != undefined) {
+            var objects = $scope.listMenuBar.find(x => x.urlCode == url);
+            if (objects != undefined)
+                return callback(true);
+            else
+                return callback(false);
+        }
+    }
+    $scope.checkPermissionPage = function (url, callback) {
+        $http.get('/permission/getPermissionMenuBar?urlPage=' + url).success(function (rs) {
+            if (rs.error) {
+                toaster.pop("error", "", rs.title, 1000, "");
+                return callback(false);
+            } else {
+                return callback(rs);
+            }
+        });
+    }
+    $scope.checkPermissionPage($scope.aliasPermission, function (rs) {
+        if (rs) {
+            $scope.permission = rs;
+            for (var i = 0; i < $scope.permission.result.length; i++) {
+                $scope.permission[$scope.permission.result[i].typePermission] = $scope.permission.result[i].status;
+            }
+        }
+    });
     // validate form
     var convert = function (get) {
         for (var i = 0; i < get.length; i++) {
