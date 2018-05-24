@@ -332,3 +332,4 @@ C:\Users\chiht\source\repos\WebApplication7\WebApplication7\bin\Debug\net461\Sys
 C:\Users\chiht\source\repos\WebApplication7\WebApplication7\bin\Debug\net461\System.Composition.Runtime.dll
 C:\Users\chiht\source\repos\WebApplication7\WebApplication7\bin\Debug\net461\System.Composition.TypedParts.dll
 C:\Users\chiht\source\repos\WebApplication7\WebApplication7\obj\Debug\net461\WebApplication7.csprojResolveAssemblyReference.cache
+C:\Users\chiht\source\repos\WebApplication7\WebApplication7\bin\Debug\net461\Microsoft.AspNetCore.Session.dll

@@ -14,7 +14,7 @@ app.controller('mainMenubar', function ($scope, $rootScope, $http, $uibModal, $t
         initData($rootScope, $http);
         $rootScope.checkAccessMenuBar($rootScope.aliasPermission, function (rs) {
             if (!rs) {
-                window.location.href = '';
+                window.location.href = '/Account/Login';
             }
         });
         //required
@@ -44,7 +44,7 @@ app.controller('mainMenubar', function ($scope, $rootScope, $http, $uibModal, $t
                 },
                 currentPage: 1,
                 totalItem: 0,
-                numberPage: 2,
+                numberPage: 5,
                 maxSize: 5,
                 fromRow: 0,
                 endRow: 0
@@ -71,13 +71,15 @@ app.controller('mainMenubar', function ($scope, $rootScope, $http, $uibModal, $t
                     message: 'Đang tải...'
                 });
                 $http.post($rootScope.url.getListItem, this).success(function (rs) {
-                    cursor.totalItem = rs.totalItem;
-                    cursor.results = rs.results;
-                    cursor.fromRow = rs.fromRow;
-                    cursor.endRow = rs.endRow;
-                    $timeout(() => {
-                        UnBlockUI("body");
-                    }, 1);
+                    if (!rs.error) {
+                        cursor.totalItem = rs.result.totalItem;
+                        cursor.results = rs.result.results;
+                        cursor.fromRow = rs.result.fromRow;
+                        cursor.endRow = rs.result.endRow;
+                        $timeout(() => {
+                            UnBlockUI("body");
+                        }, 1);
+                    }
                 });
             }
             $rootScope.reload = function () {

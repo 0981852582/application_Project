@@ -14,7 +14,7 @@ app.controller('mainPermisstion', function ($scope, $rootScope, $http, $uibModal
         initData($rootScope, $http);
         $rootScope.checkAccessMenuBar($rootScope.aliasPermission, function (rs) {
             if (!rs) {
-                window.location.href = '';
+                window.location.href = '/Account/Login';
             }
         });
         //required
@@ -44,7 +44,7 @@ app.controller('mainPermisstion', function ($scope, $rootScope, $http, $uibModal
                 },
                 currentPage: 1,
                 totalItem: 0,
-                numberPage: 2,
+                numberPage: 5,
                 maxSize: 5,
                 fromRow: 0,
                 endRow: 0
@@ -71,13 +71,15 @@ app.controller('mainPermisstion', function ($scope, $rootScope, $http, $uibModal
                     message: 'Đang tải...'
                 });
                 $http.post($rootScope.url.getListItem, this).success(function (rs) {
-                    cursor.totalItem = rs.totalItem;
-                    cursor.results = rs.results;
-                    cursor.fromRow = rs.fromRow;
-                    cursor.endRow = rs.endRow;
-                    $timeout(() => {
-                        UnBlockUI("body");
-                    }, 1);
+                    if (!rs.error) {
+                        cursor.totalItem = rs.result.totalItem;
+                        cursor.results = rs.result.results;
+                        cursor.fromRow = rs.result.fromRow;
+                        cursor.endRow = rs.result.endRow;
+                        $timeout(() => {
+                            UnBlockUI("body");
+                        }, 1);
+                    }
                 });
             }
             $rootScope.reload = function () {
@@ -148,6 +150,20 @@ app.controller('mainPermisstion', function ($scope, $rootScope, $http, $uibModal
             }
         });
     }
+    // call dialog view
+    $scope.dialogPermission = function (data) {
+        /*begin modal*/
+        var modalInstance = $uibModal.open({
+            templateUrl: '../assets/jsController/permission/dialogPermission.html',
+            controller: 'ApplyPermission',
+            backdrop: 'static',
+            resolve: {
+                parameter: function () {
+                    return data;
+                }
+            }
+        });
+    };
     // validate
     // object validate form
     $rootScope.validationOptions = [
@@ -279,4 +295,58 @@ app.controller('InsertPermission', function ($scope, $http, $location, $uibModal
         }, true);
 
     }
+});
+app.controller('ApplyPermission', function ($scope, $http, $location, $uibModalInstance, $rootScope, parameter, toaster) {
+    $scope.init = function () {
+        // declare avaiable
+        $scope.title = "Phân quyền chức năng cho quyền [ " + parameter.title + " ]."
+        // get menuBar
+        $http.post('/menuBar/getAllListMenuBar/', ).success(function (rs) {
+            if (rs.error) {
+                toaster.pop("error", "", rs.title, 1000, "");
+            } else {
+                $scope.listAllMenuBar = rs.result;
+            }
+        });
+    }
+    // call init
+    $scope.init();
+    // change select
+    $scope.changeChoice = function () {
+        let item = $scope.listAllMenuBar.find(x => x.id == $scope.model.choice)
+        let object = {
+            urlPage: item.urlCode,
+            permissionCode: parameter.permissionCode
+        }
+        $scope.urlCode = item.urlCode;
+        $http.post('/permission/getPermissionMenuBarConfig/', object).success(function (rs) {
+            if (rs.error) {
+                toaster.pop("error", "", rs.title, 1000, "");
+            } else {
+                $scope.listAllPermission= rs.result;
+            }
+        });
+    }
+    $scope.submit = function () {
+        var object = {
+            UrlCode: $scope.urlCode,
+            PermissionCode: parameter.permissionCode,
+            listPermission: $scope.listAllPermission
+        }
+        $http.post('/permission/ApplyPermission/', object).success(function (rs) {
+            if (rs.error) {
+                toaster.pop("error", "", rs.title, 1000, "");
+            } else {
+                toaster.pop("success", "", rs.title, 1000, "");
+            }
+        });
+    }
+    // function close dialog
+    $scope.ok = function () {
+        $uibModalInstance.close();
+    };
+    // function close dialog
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
 });

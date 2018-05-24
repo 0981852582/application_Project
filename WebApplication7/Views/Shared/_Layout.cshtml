@@ -1,4 +1,9 @@
-﻿
+﻿<script>
+    var login = @ViewBag.Login;
+    if (login == 0) {
+        window.location.href = '/Account/Index/';
+    }
+</script>
 <!DOCTYPE html>
 <!--
 Template Name: Metronic - Responsive Admin Dashboard Template build with Twitter Bootstrap 3.3.6

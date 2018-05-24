@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using QUANLYBANHANG.Models;
 using WebApplication7.Models;
 using WebApplication7.Models.EntitySQL;
@@ -12,25 +11,48 @@ namespace WebApplication7.Controllers
 {
     public class AccountController : Controller
     {
-
+        /// <summary>
+        /// Khai báo biến và khởi tạo giá trị
+        /// </summary>
+        public static Account AccountLogin { get; set; }
         private string urlPermission { get; set; }
         private readonly AccessContext _context;
         private PermissionController permission { get; set; }
+        /// <summary>
+        /// Khởi tạo các đối tượng
+        /// </summary>
+        /// <param name="context"></param>
+        /// 
         public AccountController(AccessContext context)
         {
             _context = context;
             permission = new PermissionController(context);
             urlPermission = "account";
         }
+        /// <summary>
+        /// trang gia diện đăng nhập
+        /// </summary>
+        /// <returns>IActionResult</returns>
+        public IActionResult Index()
+        {
+            return View();
+        }
+        /// <summary>
+        /// lấy danh sách tài khoản hiện tại
+        /// </summary>
+        /// <param name="parameter">JTable</param>
+        /// <returns>object</returns>
+        /// 
+        [HttpPost]
         public object getListAccount([FromBody] JTable parameter)
         {
-            Message msg = permission.checkPermissionMenu(urlPermission, "Admin", "Access");
-            // check permisstion
+            Message msg = permission.checkPermissionMenu(urlPermission, "Access");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện lấy dữ liệu
             dataTable dataTable = new dataTable
             {
                 fromRow = (parameter.currentPage - 1) * parameter.numberPage
@@ -67,27 +89,41 @@ namespace WebApplication7.Controllers
                 dataTable.endRow = (dataTable.fromRow + data.Count);
                 if (data.Count > 0)
                     dataTable.fromRow++;
-                return Json(dataTable);
+                msg.result = dataTable;
+                return Json(msg);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Json(dataTable);
+                msg.Error = true;
+                msg.Title = MessageError.MessageNotPermission;
+                return Json(msg);
             }
         }
 
+        /// <summary>
+        /// khai báo class chứa parameter đầu vào
+        /// </summary>
+        /// 
         public class ParameterRequest
         {
             public int ID { get; set; }
         }
+        /// <summary>
+        /// Lấy item của Account theo ID
+        /// </summary>
+        /// <param name="parameter">ParameterRequest</param>
+        /// <returns>object</returns>
+        /// 
+        [HttpPost]
         public object getItemAccount([FromBody] ParameterRequest parameter)
         {
-            Message msg = permission.checkPermissionMenu(urlPermission, "Admin", "Access");
-            // check permisstion
+            Message msg = permission.checkPermissionMenu(urlPermission, "Access");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện lấy dữ liệu
             try
             {
                 var data = _context.Account.
@@ -110,16 +146,22 @@ namespace WebApplication7.Controllers
                 return Json(new Account { });
             }
         }
-
+        /// <summary>
+        /// thực hiện thêm mới dữ liệu tài khoản
+        /// </summary>
+        /// <param name="parameter">Account</param>
+        /// <returns>object</returns>
+        /// 
+        [HttpPost]
         public object insertAccount([FromBody] Account parameter)
         {
-            Message msg = permission.checkPermissionMenu(urlPermission, "Admin", "Add");
-            // check permisstion
+            Message msg = permission.checkPermissionMenu(urlPermission, "Add");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện thêm mới
             msg = new Message { Error = false };
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
@@ -149,15 +191,22 @@ namespace WebApplication7.Controllers
                 }
             }
         }
+        /// <summary>
+        /// thực hiện xóa tài khoản
+        /// </summary>
+        /// <param name="parameter">Account</param>
+        /// <returns>object</returns>
+        /// 
+        [HttpPost]
         public object deleteAccount([FromBody] Account parameter)
         {
-            Message msg = permission.checkPermissionMenu(urlPermission, "Admin", "Delete");
-            // check permisstion
+            Message msg = permission.checkPermissionMenu(urlPermission, "Delete");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện thêm mới
             msg = new Message { Error = false };
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
@@ -183,15 +232,22 @@ namespace WebApplication7.Controllers
                 }
             }
         }
+        /// <summary>
+        /// thực hiện cập nhật tài khoản
+        /// </summary>
+        /// <param name="parameter">Account</param>
+        /// <returns>object</returns>
+        /// 
+        [HttpPost]
         public object updateAccount([FromBody] Account parameter)
         {
-            Message msg = permission.checkPermissionMenu(urlPermission, "Admin", "Edit");
-            // check permisstion
+            Message msg = permission.checkPermissionMenu(urlPermission, "Edit");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện thêm mới
             msg = new Message { Error = false };
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
@@ -216,6 +272,38 @@ namespace WebApplication7.Controllers
                     return Json(msg);
                 }
             }
+        }
+        /// <summary>
+        /// Thực hiện đăng nhập tài khoản
+        /// </summary>
+        /// <param name="parameter">Account</param>
+        /// <returns>object</returns>
+        /// 
+        [HttpPost]
+        public object Login([FromBody] Account parameter)
+        {
+            Message msg = new Message { Error = false };
+            try
+            {
+                var data = _context.Account.FirstOrDefault(x => x.Username == parameter.Username && x.Password == parameter.Password);
+                if(data != null)
+                {
+                    AccountLogin = data;
+                    msg.Title = "Đăng nhập thành công";
+                }
+                else
+                {
+                    msg.Error = true;
+                    msg.Title = "Đăng nhập không thành công";
+                }
+            }
+            catch(Exception ex)
+            {
+                msg.Error = true;
+                msg.result = ex;
+                msg.Title = "Đăng nhập không thành công";
+            }
+            return Json(msg);
         }
     }
 }

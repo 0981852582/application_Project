@@ -25,6 +25,10 @@ namespace WebApplication7
         {
             var connectionString = Configuration.GetConnectionString("QUANLYBANHANG");
             services.AddMvc();
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(1);//You can set Time
+            });
+            services.AddSession();
             services.AddDbContext<AccessContext>(options => options.UseSqlServer(connectionString));
         }
 
@@ -42,7 +46,7 @@ namespace WebApplication7
             }
 
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

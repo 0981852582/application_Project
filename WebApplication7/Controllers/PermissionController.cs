@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,22 +11,35 @@ namespace WebApplication7.Controllers
 {
     public class PermissionController : Controller
     {
+        /// <summary>
+        /// Khai báo biến và khởi tạo giá trị
+        /// </summary>
         private string urlPermission { get; set; }
         private readonly AccessContext _context;
+        /// <summary>
+        /// Khởi tạo các đối tượng
+        /// </summary>
+        /// <param name="context"></param>
+        /// 
         public PermissionController(AccessContext context)
         {
             _context = context;
             urlPermission = "permission";
         }
+        /// <summary>
+        /// Lấy danh sách quyền
+        /// </summary>
+        /// <param name="parameter">JTable</param>
+        /// <returns>object</returns>
         public object getListPermission([FromBody] JTable parameter)
         {
-            // check permisstion
-            Message msg = checkPermissionMenu(urlPermission, "Admin", "Access");
+            Message msg = checkPermissionMenu(urlPermission, "Access");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện lấy danh sách dữ liệu
             dataTable dataTable = new dataTable
             {
                 fromRow = (parameter.currentPage - 1) * parameter.numberPage
@@ -56,27 +70,38 @@ namespace WebApplication7.Controllers
                 dataTable.endRow = (dataTable.fromRow + data.Count);
                 if (data.Count > 0)
                     dataTable.fromRow++;
-                return Json(dataTable);
+                msg.result = dataTable;
+                return Json(msg);
             }
             catch (Exception)
             {
-                return Json(dataTable);
+                msg.Title = MessageError.MessageNotPermission;
+                msg.Error = true;
+                return Json(msg);
             }
         }
-
+        /// <summary>
+        ///  khai báo class chứa parameter đầu vào
+        /// </summary>
         public class ParameterRequest
         {
             public int ID { get; set; }
         }
+        /// <summary>
+        /// Lấy Item của quyền bằng ID
+        /// </summary>
+        /// <param name="parameter">ParameterRequest</param>
+        /// <returns>object</returns>
+        [HttpPost]
         public object getItemPermission([FromBody] ParameterRequest parameter)
         {
-            // check permisstion
-            Message msg = checkPermissionMenu(urlPermission, "Admin", "Access");
+            Message msg = checkPermissionMenu(urlPermission, "Access");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện lấy Item Quyền
             try
             {
                 var data = _context.Permission.
@@ -97,16 +122,21 @@ namespace WebApplication7.Controllers
                 return Json(new Permission { });
             }
         }
-
+        /// <summary>
+        /// Thêm mới quyền
+        /// </summary>
+        /// <param name="parameter">Permission</param>
+        /// <returns>object</returns>
+        [HttpPost]
         public object insertPermission([FromBody] Permission parameter)
         {
-            Message msg = checkPermissionMenu(urlPermission, "Admin", "Add");
-            // check permisstion
+            Message msg = checkPermissionMenu(urlPermission, "Add");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện thêm mới quyền
             msg = new Message { Error = false };
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
@@ -137,15 +167,20 @@ namespace WebApplication7.Controllers
                 }
             }
         }
+        /// <summary>
+        /// Thực hiện xóa quyền
+        /// </summary>
+        /// <param name="parameter">Permission</param>
+        /// <returns>object</returns>
         public object deletePermission([FromBody] Permission parameter)
         {
-            Message msg = checkPermissionMenu(urlPermission, "Admin", "Delete");
-            // check permisstion
+            Message msg = checkPermissionMenu(urlPermission, "Delete");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện xóa quyền
             msg = new Message { Error = false };
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
@@ -171,15 +206,21 @@ namespace WebApplication7.Controllers
                 }
             }
         }
+        /// <summary>
+        /// Cập nhật quyền
+        /// </summary>
+        /// <param name="parameter">Permission</param>
+        /// <returns>object</returns>
+        [HttpPost]
         public object updatePermission([FromBody] Permission parameter)
         {
-            Message msg = checkPermissionMenu(urlPermission, "Admin", "Edit");
-            // check permisstion
+            Message msg = checkPermissionMenu(urlPermission, "Edit");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện cập nhật quyền
             msg = new Message { Error = false };
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
@@ -206,11 +247,19 @@ namespace WebApplication7.Controllers
                 }
             }
         }
+        /// <summary>
+        ///  khai báo class chứa parameter đầu vào
+        /// </summary>
         public class getPermissionMenuBarEntity
         {
             public string TypePermission { get; set; }
             public bool Status { get; set; }
         }
+        /// <summary>
+        /// Lấy dữ liệu quyền để check ngoài view khi thực hiện hành cộng
+        /// </summary>
+        /// <param name="urlPage">string</param>
+        /// <returns>object</returns>
         [HttpGet]
         public object getPermissionMenuBar(string urlPage)
         {
@@ -226,7 +275,7 @@ namespace WebApplication7.Controllers
                 {
                     foreach (var item in data)
                     {
-                        if ((_context.MenuOfPage.Count(x => x.TypePermission == item.TypePermission && x.urlCode == urlPage && x.PermissionCode == "admin")) > 0)
+                        if ((_context.MenuOfPage.Count(x => x.TypePermission == item.TypePermission && x.urlCode == urlPage && x.PermissionCode == AccountController.AccountLogin.PermissionCode)) > 0)
                         {
                             item.Status = true;
                         }
@@ -243,34 +292,157 @@ namespace WebApplication7.Controllers
                 return Json(msg);
             }
         }
-        public Message checkPermissionMenu(string urlPage, string permission, string type)
+        /// <summary>
+        ///  khai báo class chứa parameter đầu vào
+        /// </summary>
+        public class MenuBarConfigEntity
+        {
+            public string urlPage { get; set; }
+            public string PermissionCode { get; set; }
+        }
+        /// <summary>
+        /// Lấy dữ liệu quyền để check ngoài view khi thực hiện hành cộng
+        /// </summary>
+        /// <param name="urlPage">string</param>
+        /// <returns>object</returns>
+        [HttpPost]
+        public object getPermissionMenuBarConfig([FromBody] MenuBarConfigEntity parameter)
         {
             Message msg = new Message { Error = false };
             try
             {
-                var count = _context.MenuOfPage.Count(x =>
-                        x.PermissionCode == permission
-                        && x.urlCode == urlPage
-                        && x.TypePermission == type);
-                if (count > 0)
+                var data = _context.PermissionOfPage.AsNoTracking().Select(x => new getPermissionMenuBarEntity
                 {
-                    msg.Error = false;
-                }
-                else
+                    TypePermission = x.TypePermission,
+                    Status = false
+                }).ToList();
+                if (parameter.urlPage != null)
                 {
-                    msg.Title = "Lỗi quyền chức năng.";
-                    msg.Error = true;
+                    foreach (var item in data)
+                    {
+                        if ((_context.MenuOfPage.Count(x => x.TypePermission == item.TypePermission && x.urlCode == parameter.urlPage && x.PermissionCode == parameter.PermissionCode)) > 0)
+                        {
+                            item.Status = true;
+                        }
+                    }
                 }
-
+                msg.result = data;
+                msg.Title = "Lấy permission thành công.";
+                return Json(msg);
             }
             catch (Exception ex)
             {
-                msg.Title = "Lỗi quyền chức năng.";
+                msg.result = ex;
+                msg.Title = "Lấy permission thất bại thành công.";
+                return Json(msg);
+            }
+        }
+        /// <summary>
+        /// thực hiện kiểm tra khi thực hiện một method nào đó
+        /// </summary>
+        /// <param name="urlPage">string</param>
+        /// <param name="type">string</param>
+        /// <returns>Message</returns>
+        public Message checkPermissionMenu(string urlPage, string type)
+        {
+            Message msg = new Message { Error = false };
+            try
+            {
+                if (AccountController.AccountLogin != null)
+                {
+                    var count = _context.MenuOfPage.Count(x =>
+                        x.urlCode == urlPage
+                        && x.TypePermission == type
+                        && x.PermissionCode == AccountController.AccountLogin.PermissionCode);
+                    if (count > 0)
+                    {
+                        msg.Error = false;
+                    }
+                    else
+                    {
+                        msg.Title = "Tài khoản không có quyền thực hiện chức năng này.";
+                        msg.Error = true;
+                    }
+                }
+                else
+                {
+                    msg.Title = "Tài khoản không có quyền thực hiện chức năng này.";
+                    msg.Error = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                msg.Title = "Tài khoản không có quyền thực hiện chức năng này.";
                 msg.result = ex;
                 msg.Error = true;
             }
             return msg;
         }
-
+        /// <summary>
+        ///  khai báo class chứa parameter đầu vào áp dụng quyền
+        /// </summary>
+        public class ApplyPermissionList
+        {
+            public string TypePermission { get; set; }
+            public bool Status { get; set; }
+        }
+        /// <summary>
+        ///  khai báo class chứa parameter đầu vào áp dụng quyền
+        /// </summary>
+        public class ApplyPermissionEntity
+        {
+            public string UrlCode { get; set; }
+            public string PermissionCode { get; set; }
+            public List<ApplyPermissionList> listPermission { get; set; }
+        }
+        /// <summary>
+        /// Thực hiện áp dụng chức năng cho quyền nào đó
+        /// </summary>
+        /// <param name="parameter">ApplyPermissionEntity</param>
+        /// <returns>object</returns>
+        public object ApplyPermission([FromBody] ApplyPermissionEntity parameter)
+        {
+            Message msg = new Message { Error = false };
+            using (var dbContextTransaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var dataDelete = _context.MenuOfPage.Where(x => x.PermissionCode == parameter.PermissionCode && x.urlCode == parameter.UrlCode).ToList();
+                    foreach (var item in dataDelete)
+                    {
+                        _context.MenuOfPage.Remove(item);
+                        _context.SaveChanges();
+                    }
+                    foreach (var item in parameter.listPermission)
+                    {
+                        if (item.Status)
+                        {
+                            MenuOfPage entity = new MenuOfPage
+                            {
+                                TypePermission = item.TypePermission,
+                                PermissionCode = parameter.PermissionCode,
+                                urlCode = parameter.UrlCode,
+                                CreatedBy = "Trương Quốc Trọng",
+                                CreatedDate = DateTime.Now,
+                                ModifiedBy = "Trương Quốc Trọng",
+                                ModifiedDate = DateTime.Now
+                            };
+                            _context.MenuOfPage.Add(entity);
+                            _context.SaveChanges();
+                        }
+                    }
+                    msg.Title = "Áp dụng quyền thành công";
+                    dbContextTransaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    dbContextTransaction.Rollback();
+                    msg.Error = true;
+                    msg.Title = "Áp dụng quyền không thành công.";
+                    msg.result = ex;
+                }
+            }
+            return Json(msg);
+        }
     }
 }

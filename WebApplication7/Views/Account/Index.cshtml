@@ -1,0 +1,17 @@
+﻿@{
+    Layout = "~/Views/Shared/_Login.cshtml";
+}
+<div class="wrapper">
+    <form class="form-signin">
+        <h2 class="form-signin-heading">Đăng nhập</h2>
+        <input type="text" class="form-control" name="username" ng-model="model.username" placeholder="Tài khoản" autofocus="" />
+        <br />
+        <input type="password" class="form-control" name="password" ng-model="model.password" placeholder="Mật khẩu" />
+        <button class="btn btn-lg btn-primary btn-block" type="button" ng-click="submit()">Đăng nhập</button>
+        <br />
+        <h5 style="color:red;text-align:center;">
+            {{message}} .
+        </h5>
+    </form>
+</div>
+

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QUANLYBANHANG.Models;
@@ -12,25 +10,38 @@ namespace WebApplication7.Controllers
 {
     public class MenuBarController : Controller
     {
-
+        /// <summary>
+        /// Khai báo biến và khởi tạo giá trị
+        /// </summary>
         private string urlPermission { get; set; }
         private readonly AccessContext _context;
         private PermissionController permission { get; set; }
+        /// <summary>
+        /// Khởi tạo các đối tượng
+        /// </summary>
+        /// <param name="context"></param>
+        /// 
         public MenuBarController(AccessContext context)
         {
             _context = context;
             permission = new PermissionController(context);
             urlPermission = "menuBar";
         }
+        /// <summary>
+        /// Lấy danh sách thanh menu danh mục
+        /// </summary>
+        /// <param name="parameter">JTable</param>
+        /// <returns>object</returns>
+        [HttpPost]
         public object getListMenuBar([FromBody] JTable parameter)
         {
-            Message msg = permission.checkPermissionMenu(urlPermission, "Admin", "Access");
-            // check permisstion
+            Message msg = permission.checkPermissionMenu(urlPermission, "Access");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện lấy danh sách dữ liệu
             dataTable dataTable = new dataTable
             {
                 fromRow = (parameter.currentPage - 1) * parameter.numberPage
@@ -62,27 +73,68 @@ namespace WebApplication7.Controllers
                 dataTable.endRow = (dataTable.fromRow + data.Count);
                 if (data.Count > 0)
                     dataTable.fromRow++;
-                return Json(dataTable);
+                msg.result = dataTable;
+                return Json(msg);
             }
             catch (Exception ex)
             {
-                return Json(dataTable);
+                msg.Error = true;
+                msg.result = ex;
+                msg.Title = MessageError.MessageNotPermission;
+                return Json(msg);
             }
         }
-
+        /// <summary>
+        /// Lấy danh sách menu danh mục Lookup
+        /// </summary>
+        /// <returns>object</returns>
+        [HttpPost]
+        public object getAllListMenuBar()
+        {
+            Message msg = new Message { Error = false };
+            try
+            {
+                var data = _context.MenuBar
+                    .OrderByDescending(x => x.ID)
+                    .Select(x => new
+                    {
+                        x.ID,
+                        x.Title,
+                        x.urlCode
+                    }).ToList();
+                msg.result = data;
+                msg.Title = "Lấy danh sách menu thành công";
+                return Json(msg);
+            }
+            catch (Exception ex)
+            {
+                msg.Error = true;
+                msg.result = ex;
+                msg.Title = "Lấy thông tin menu thất bại";
+                return Json(msg);
+            }
+        }
+        /// <summary>
+        /// khai báo class chứa parameter đầu vào
+        /// </summary>
         public class ParameterRequest
         {
             public int ID { get; set; }
         }
+        /// <summary>
+        /// Lấy Item của MenuBar theo ID
+        /// </summary>
+        /// <param name="parameter">ParameterRequest</param>
+        /// <returns>object</returns>
         public object getItemMenuBar([FromBody] ParameterRequest parameter)
         {
-            Message msg = permission.checkPermissionMenu(urlPermission, "Admin", "Access");
-            // check permisstion
+            Message msg = permission.checkPermissionMenu(urlPermission, "Access");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện lấy dữ liệu
             try
             {
                 var data = _context.MenuBar.
@@ -104,16 +156,20 @@ namespace WebApplication7.Controllers
                 return Json(new MenuBar { });
             }
         }
-
+        /// <summary>
+        /// Thực hiện thêm mới MenuBar
+        /// </summary>
+        /// <param name="parameter">MenuBar</param>
+        /// <returns>object</returns>
         public object insertMenuBar([FromBody] MenuBar parameter)
         {
-            Message msg = permission.checkPermissionMenu(urlPermission, "Admin", "Add");
-            // check permisstion
+            Message msg = permission.checkPermissionMenu(urlPermission, "Add");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện thêm mới Menu Bar
             msg = new Message { Error = false };
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
@@ -144,15 +200,20 @@ namespace WebApplication7.Controllers
                 }
             }
         }
+        /// <summary>
+        /// Thực hiện xóa MenuBar
+        /// </summary>
+        /// <param name="parameter">MenuBar</param>
+        /// <returns>object</returns>
         public object deleteMenuBar([FromBody] MenuBar parameter)
         {
-            Message msg = permission.checkPermissionMenu(urlPermission, "Admin", "Delete");
-            // check permisstion
+            Message msg = permission.checkPermissionMenu(urlPermission, "Delete");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện xóa Menu Bar
             msg = new Message { Error = false };
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
@@ -178,15 +239,20 @@ namespace WebApplication7.Controllers
                 }
             }
         }
+        /// <summary>
+        /// Thực hiện cập nhật MenuBar
+        /// </summary>
+        /// <param name="parameter">MenuBar</param>
+        /// <returns>object</returns>
         public object updateMenuBar([FromBody] MenuBar parameter)
         {
-            Message msg = permission.checkPermissionMenu(urlPermission, "Admin", "Edit");
-            // check permisstion
+            Message msg = permission.checkPermissionMenu(urlPermission, "Edit");
+            // kiểm tra quyền trước khi lấy dữ liệu
             if (msg.Error)
             {
                 return Json(msg);
             }
-            // query
+            // nếu có quyền thì thực hiện cập nhật Menu Bar
             msg = new Message { Error = false };
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
@@ -212,6 +278,9 @@ namespace WebApplication7.Controllers
                 }
             }
         }
+        /// <summary>
+        ///  khai báo class chứa parameter đầu vào
+        /// </summary>
         public class getViewMenuBarEntity
         {
             public string Title { get; set; }
@@ -220,6 +289,10 @@ namespace WebApplication7.Controllers
             public string PermissionCode { get; set; }
             public string TypePermission { get; set; }
         }
+        /// <summary>
+        /// Thực hiện lấy danh MenuBar dùng Lookup
+        /// </summary>
+        /// <returns>object</returns>
         [HttpPost]
         public object getViewMenuBar()
         {
@@ -231,7 +304,7 @@ namespace WebApplication7.Controllers
                     urlCode = x.urlCode,
                     PermissionCode = x.PermissionCode,
                     TypePermission = x.TypePermission
-                }).Where(x => x.TypePermission == "access").ToList();
+                }).Where(x => x.TypePermission == "Access" && x.PermissionCode == AccountController.AccountLogin.PermissionCode).ToList();
                 foreach (var item in data)
                 {
                     var info = _context.MenuBar.FirstOrDefault(x => x.urlCode == item.urlCode);
@@ -245,13 +318,13 @@ namespace WebApplication7.Controllers
                 msg.Title = "Lấy menuBar thành công.";
                 return Json(msg);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 msg.result = ex;
                 msg.Title = "Lấy menuBar thất bại thành công.";
                 return Json(msg);
             }
-            
+
         }
     }
 }
