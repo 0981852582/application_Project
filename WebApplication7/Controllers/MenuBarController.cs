@@ -92,6 +92,19 @@ namespace WebApplication7.Controllers
         public object getAllListMenuBar()
         {
             Message msg = new Message { Error = false };
+            // kiểm tra quyền trước khi lấy dữ liệu
+            if (AccountController.AccountLogin == null)
+            {
+                msg.Title = "Chưa đăng nhập tài khoản";
+                msg.Error = true;
+                return Json(msg);
+            }
+            else if (AccountController.AccountLogin.PermissionCode != "Admin")
+            {
+                msg.Title = "Tài khoản không có quyền thực hiện chức năng này";
+                msg.Error = true;
+                return Json(msg);
+            }
             try
             {
                 var data = _context.MenuBar
@@ -299,23 +312,42 @@ namespace WebApplication7.Controllers
             Message msg = new Message { Error = false };
             try
             {
-                var data = _context.MenuOfPage.Select(x => new getViewMenuBarEntity
+                if (AccountController.AccountLogin.PermissionCode != "Admin")
                 {
-                    urlCode = x.urlCode,
-                    PermissionCode = x.PermissionCode,
-                    TypePermission = x.TypePermission
-                }).Where(x => x.TypePermission == "Access" && x.PermissionCode == AccountController.AccountLogin.PermissionCode).ToList();
-                foreach (var item in data)
-                {
-                    var info = _context.MenuBar.FirstOrDefault(x => x.urlCode == item.urlCode);
-                    if (info != null)
+                    var data = _context.MenuOfPage.Select(x => new getViewMenuBarEntity
                     {
-                        item.Title = info.Title;
-                        item.Url = info.Url;
-                    };
+                        urlCode = x.urlCode
+                    }).Where(x => x.TypePermission == "Access" && x.PermissionCode == AccountController.AccountLogin.PermissionCode).ToList();
+                    foreach (var item in data)
+                    {
+                        var info = _context.MenuBar.FirstOrDefault(x => x.urlCode == item.urlCode);
+                        if (info != null)
+                        {
+                            item.Title = info.Title;
+                            item.Url = info.Url;
+                        };
+                    }
+                    msg.result = data;
+                    msg.Title = "Lấy menuBar thành công.";
                 }
-                msg.result = data;
-                msg.Title = "Lấy menuBar thành công.";
+                else if(AccountController.AccountLogin.PermissionCode == "Admin")
+                {
+                    var data = _context.MenuBar.Select(x => new getViewMenuBarEntity
+                    {
+                        urlCode = x.urlCode
+                    }).ToList();
+                    foreach (var item in data)
+                    {
+                        var info = _context.MenuBar.FirstOrDefault(x => x.urlCode == item.urlCode);
+                        if (info != null)
+                        {
+                            item.Title = info.Title;
+                            item.Url = info.Url;
+                        };
+                    }
+                    msg.result = data;
+                    msg.Title = "Lấy menuBar thành công.";
+                }
                 return Json(msg);
             }
             catch (Exception ex)

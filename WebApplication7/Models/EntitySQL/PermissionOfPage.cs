@@ -9,6 +9,7 @@ namespace WebApplication7.Models.EntitySQL
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int ID { get; set; }
+        public string Title { get; set; }
         public string TypePermission { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; }

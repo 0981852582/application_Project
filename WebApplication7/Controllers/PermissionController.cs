@@ -252,6 +252,7 @@ namespace WebApplication7.Controllers
         /// </summary>
         public class getPermissionMenuBarEntity
         {
+            public string Title { get; set; }
             public string TypePermission { get; set; }
             public bool Status { get; set; }
         }
@@ -263,7 +264,13 @@ namespace WebApplication7.Controllers
         [HttpGet]
         public object getPermissionMenuBar(string urlPage)
         {
-            Message msg = new Message { Error = false };
+            Message msg = checkPermissionMenu(urlPermission, "Access");
+            // kiểm tra quyền trước khi lấy dữ liệu
+            if (msg.Error)
+            {
+                return Json(msg);
+            }
+            // nếu có quyền thì thực hiện lấy danh sách dữ liệu
             try
             {
                 var data = _context.PermissionOfPage.AsNoTracking().Select(x => new getPermissionMenuBarEntity
@@ -275,6 +282,11 @@ namespace WebApplication7.Controllers
                 {
                     foreach (var item in data)
                     {
+                        if (AccountController.AccountLogin.PermissionCode.Trim() == "Admin")
+                        {
+                            item.Status = true;
+                        }
+                        else
                         if ((_context.MenuOfPage.Count(x => x.TypePermission == item.TypePermission && x.urlCode == urlPage && x.PermissionCode == AccountController.AccountLogin.PermissionCode)) > 0)
                         {
                             item.Status = true;
@@ -301,7 +313,7 @@ namespace WebApplication7.Controllers
             public string PermissionCode { get; set; }
         }
         /// <summary>
-        /// Lấy dữ liệu quyền để check ngoài view khi thực hiện hành cộng
+        /// Lấy dữ liệu toàn bộ quyền
         /// </summary>
         /// <param name="urlPage">string</param>
         /// <returns>object</returns>
@@ -309,12 +321,26 @@ namespace WebApplication7.Controllers
         public object getPermissionMenuBarConfig([FromBody] MenuBarConfigEntity parameter)
         {
             Message msg = new Message { Error = false };
+            // kiểm tra quyền trước khi lấy dữ liệu
+            if (AccountController.AccountLogin == null)
+            {
+                msg.Title = "Chưa đăng nhập tài khoản";
+                msg.Error = true;
+                return Json(msg);
+            }
+            else if (AccountController.AccountLogin.PermissionCode != "Admin")
+            {
+                msg.Title = "Tài khoản không có quyền thực hiện chức năng này";
+                msg.Error = true;
+                return Json(msg);
+            }
             try
             {
                 var data = _context.PermissionOfPage.AsNoTracking().Select(x => new getPermissionMenuBarEntity
                 {
                     TypePermission = x.TypePermission,
-                    Status = false
+                    Status = false,
+                    Title = x.Title
                 }).ToList();
                 if (parameter.urlPage != null)
                 {
@@ -350,19 +376,27 @@ namespace WebApplication7.Controllers
             {
                 if (AccountController.AccountLogin != null)
                 {
-                    var count = _context.MenuOfPage.Count(x =>
+                    if (AccountController.AccountLogin.PermissionCode != "Admin")
+                    {
+                        var count = _context.MenuOfPage.Count(x =>
                         x.urlCode == urlPage
                         && x.TypePermission == type
                         && x.PermissionCode == AccountController.AccountLogin.PermissionCode);
-                    if (count > 0)
-                    {
-                        msg.Error = false;
+                        if (count > 0)
+                        {
+                            msg.Error = false;
+                        }
+                        else
+                        {
+                            msg.Title = "Tài khoản không có quyền thực hiện chức năng này.";
+                            msg.Error = true;
+                        }
                     }
                     else
                     {
-                        msg.Title = "Tài khoản không có quyền thực hiện chức năng này.";
-                        msg.Error = true;
+                        msg.Error = false;
                     }
+
                 }
                 else
                 {
@@ -402,9 +436,25 @@ namespace WebApplication7.Controllers
         /// <returns>object</returns>
         public object ApplyPermission([FromBody] ApplyPermissionEntity parameter)
         {
+
             Message msg = new Message { Error = false };
+            // kiểm tra quyền trước khi lấy dữ liệu
+            if (AccountController.AccountLogin == null)
+            {
+                msg.Title = "Chưa đăng nhập tài khoản";
+                msg.Error = true;
+                return Json(msg);
+            }
+            else if(AccountController.AccountLogin.PermissionCode != "Admin")
+            {
+                msg.Title = "Tài khoản không có quyền thực hiện chức năng này";
+                msg.Error = true;
+                return Json(msg);
+            }
+            // nếu có quyền thì thực hiện áp dụng quyền
             using (var dbContextTransaction = _context.Database.BeginTransaction())
             {
+                msg = new Message { Error = false };
                 try
                 {
                     var dataDelete = _context.MenuOfPage.Where(x => x.PermissionCode == parameter.PermissionCode && x.urlCode == parameter.UrlCode).ToList();
@@ -422,9 +472,9 @@ namespace WebApplication7.Controllers
                                 TypePermission = item.TypePermission,
                                 PermissionCode = parameter.PermissionCode,
                                 urlCode = parameter.UrlCode,
-                                CreatedBy = "Trương Quốc Trọng",
+                                CreatedBy = AccountController.AccountLogin.Username,
                                 CreatedDate = DateTime.Now,
-                                ModifiedBy = "Trương Quốc Trọng",
+                                ModifiedBy = AccountController.AccountLogin.Username,
                                 ModifiedDate = DateTime.Now
                             };
                             _context.MenuOfPage.Add(entity);

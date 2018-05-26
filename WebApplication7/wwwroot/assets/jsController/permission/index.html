@@ -34,7 +34,7 @@
                         <th> Mô tả </th>
                         <th style="white-space: nowrap;"> Trạng thái </th>
                         <th> Phân Quyền </th>
-                        <th ng-if="permission.View"> Xem </th>
+                        <th ng-if="permission.Access"> Xem </th>
                         <th ng-if="permission.Edit"> Cập nhật </th>
                         <th ng-if="permission.Delete"> Xóa </th>
                     </tr>
@@ -47,11 +47,11 @@
                         <td style="width:30%;"> {{item.description}}</td>
                         <td style="width:10%;white-space: nowrap;"> {{item.status ? 'Sử dụng' : 'Không sử dụng'}}</td>
                         <td style="width:30%;">
-                            <button type="button" ng-click="dialogPermission(item)" class="btn btn-default btn-sm">
+                            <button type="button" ng-if="item.permissionCode != 'Admin'" ng-click="dialogPermission(item)" class="btn btn-default btn-sm">
                                 Phân quyền <span class="glyphicon glyphicon-eye-open"></span>
                             </button>
                         </td>
-                        <th style="width:10%;" ng-if="permission.View">
+                        <th style="width:10%;" ng-if="permission.Access">
                             <button type="button" ng-click="dialogView(item.id)" class="btn btn-default btn-sm">
                                 Xem  <span class="glyphicon glyphicon-eye-open"></span>
                             </button>
@@ -62,7 +62,7 @@
                             </button>
                         </th>
                         <th style="width:10%;" ng-if="permission.Delete">
-                            <button type="button" ng-click="dialogDelete(item.id,item.title)" class="btn btn-default btn-sm">
+                            <button type="button" ng-if="item.permissionCode != 'Admin'" ng-click="dialogDelete(item.id,item.title)" class="btn btn-default btn-sm">
                                 Xóa  <span class="glyphicon glyphicon-remove-sign"></span>
                             </button>
                         </th>

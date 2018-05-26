@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using QUANLYBANHANG.Models;
 
 namespace WebApplication7.Controllers

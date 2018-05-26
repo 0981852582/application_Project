@@ -14,11 +14,6 @@ app.controller('mainAccount', function ($scope, $rootScope, $http, $uibModal, $t
         // required
         $rootScope.aliasPermission = 'account';
         initData($rootScope, $http);
-        $rootScope.checkAccessMenuBar($rootScope.aliasPermission, function (rs) {
-            if (!rs) {
-                window.location.href = '/Account/Login';
-            }
-        });
         //required
         var buildDatatable = function () {
             $scope.table = {
@@ -81,6 +76,9 @@ app.controller('mainAccount', function ($scope, $rootScope, $http, $uibModal, $t
                         $timeout(() => {
                             UnBlockUI("body");
                         }, 1);
+                    } else {
+                        cursor.results = [];
+                        toaster.pop("error", "", rs.title, 1000, "");
                     }
                 });
             }

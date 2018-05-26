@@ -45,7 +45,7 @@
                 <label>Ngày sinh</label>
             </div>
             <div class="col-lg-4">
-                {{model.dateOfBirth}}
+                {{model.dateOfBirth | fdate : 'DD/MM/YYYY'}}
             </div>
         </div>
     </div>

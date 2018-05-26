@@ -72,7 +72,6 @@ app.controller('rootController', function ($scope, $state, $rootScope, $http, $u
             toaster.pop("error", "", rs.title, 1000, "");
         } else {
             $rootScope.listMenuBar = rs.result;
-            console.log(rs.result);
         }
     });
 });

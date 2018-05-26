@@ -34,7 +34,7 @@
 
                         <th> Mô tả </th>
                         <th style="white-space: nowrap;"> Trạng thái </th>
-                        <th ng-if="permission.View"> Xem </th>
+                        <th ng-if="permission.Access"> Xem </th>
                         <th ng-if="permission.Edit"> Cập nhật </th>
                         <th ng-if="permission.Delete"> Xóa </th>
                     </tr>
@@ -46,7 +46,7 @@
                         <td style="width:20%;"> {{item.url}} </td>
                         <td style="width:30%;"> {{item.description}}</td>
                         <td style="width:10%;white-space: nowrap;"> {{item.status ? 'Sử dụng' : 'Không sử dụng'}}</td>
-                        <th style="width:10%;" ng-if="permission.View">
+                        <th style="width:10%;" ng-if="permission.Access">
                             <button type="button" ng-click="dialogView(item.id)" class="btn btn-default btn-sm">
                                 Xem  <span class="glyphicon glyphicon-eye-open"></span>
                             </button>

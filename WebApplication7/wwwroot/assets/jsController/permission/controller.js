@@ -12,11 +12,6 @@ app.controller('mainPermisstion', function ($scope, $rootScope, $http, $uibModal
         // required
         $rootScope.aliasPermission = 'permission';
         initData($rootScope, $http);
-        $rootScope.checkAccessMenuBar($rootScope.aliasPermission, function (rs) {
-            if (!rs) {
-                window.location.href = '/Account/Login';
-            }
-        });
         //required
         var buildDatatable = function () {
             $scope.table = {
@@ -79,6 +74,9 @@ app.controller('mainPermisstion', function ($scope, $rootScope, $http, $uibModal
                         $timeout(() => {
                             UnBlockUI("body");
                         }, 1);
+                    } else {
+                        cursor.results = [];
+                        toaster.pop("error", "", rs.title, 1000, "");
                     }
                 });
             }
@@ -313,6 +311,10 @@ app.controller('ApplyPermission', function ($scope, $http, $location, $uibModalI
     $scope.init();
     // change select
     $scope.changeChoice = function () {
+        if ($scope.model.choice == '' || $scope.model.choice == undefined) {
+            $scope.listAllPermission = [];
+            return;
+        }  
         let item = $scope.listAllMenuBar.find(x => x.id == $scope.model.choice)
         let object = {
             urlPage: item.urlCode,

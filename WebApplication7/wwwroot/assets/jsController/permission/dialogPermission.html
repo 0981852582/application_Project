@@ -6,22 +6,23 @@
     <div class="modal-body">
         <div class="row">
             <div class="col-lg-12">
-                <div class="col-lg-4 label-custom">
-                    Chọn danh mục <span class="required"> *</span>
-                </div>
                 <div class="col-lg-8">
                     <select class="form-control" ng-model="model.choice" ng-change="changeChoice()">
-                        <option value="">-- Chọn danh mục --</option>
+                        <option value="">-- Chọn chức năng cần phân quyền --</option>
                         <option ng-repeat="item in listAllMenuBar" value="{{item.id}}">{{item.title}}</option>
                     </select>
                 </div>
                 <hr />
                 <table class="table table-bordered">
                     <tr>
+                        <th style="text-align:center">TT</th>
                         <th>Tên Quyền</th>
+                        <th>Mã Quyền</th>
                         <th>Trạng thái</th>
                     </tr>
                     <tr ng-repeat="item in listAllPermission">
+                        <td align="center">{{$index + 1}}</td>
+                        <td>{{item.title}}</td>
                         <td>{{item.typePermission}}</td>
                         <td>
                             <label class="mt-checkbox mt-checkbox-single mt-checkbox-outline">
@@ -35,7 +36,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-primary" ng-click="submit()">Áp dụng</button>
+        <button type="button" class="btn btn-primary" ng-if="model.choice !=  '' && model.choice != undefined" ng-click="submit()">Áp dụng</button>
         <button type="button" class="btn btn-danger" ng-click="cancel()">Đóng</button>
     </div>
 </div>

@@ -13,7 +13,7 @@
                     Thêm
                     <span class="glyphicon glyphicon glyphicon-plus"></span>
                 </button>
-                <button type="button" class="btn btn-default"  ng-click="reload()">
+                <button type="button" class="btn btn-default" ng-click="reload()">
                     Tải lại
                     <span class="glyphicon glyphicon glyphicon-refresh"></span>
                 </button>
@@ -34,7 +34,7 @@
                         <th tabindex="table1.FullName" class="sorting" ng-click="table.changeOrder('FullName','table1.FullName')"> Họ tên </th>
                         <th tabindex="table1.Address" class="sorting" ng-click="table.changeOrder('Address','table1.Address')"> Địa chỉ </th>
                         <th tabindex="table1.DateOfBirth" class="sorting" ng-click="table.changeOrder('DateOfBirth','table1.DateOfBirth')"> Ngày sinh </th>
-                        <th ng-if="permission.View"> Xem </th>
+                        <th ng-if="permission.Access"> Xem </th>
                         <th ng-if="permission.Edit"> Cập nhật </th>
                         <th ng-if="permission.Delete"> Xóa </th>
                     </tr>
@@ -46,8 +46,8 @@
                         <td style="width:10%;white-space: nowrap;"> {{item.permissionCode}}</td>
                         <td style="width:10%;"> {{item.fullName}}</td>
                         <td style="width:10%;"> {{item.address}}</td>
-                        <td style="width:10%;"> {{item.dateOfBirth | fdate : 'dd/MM/yyyy'}}</td>
-                        <th style="width:10%;" ng-if="permission.View">
+                        <td style="width:10%;"> {{item.dateOfBirth | fdate : 'DD/MM/YYYY'}}</td>
+                        <th style="width:10%;" ng-if="permission.Access">
                             <button type="button" ng-click="dialogView(item.id)" class="btn btn-default btn-sm">
                                 Xem  <span class="glyphicon glyphicon-eye-open"></span>
                             </button>
