@@ -26,6 +26,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\assets\apps\img\" />
     <Folder Include="wwwroot\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
+    <Folder Include="wwwroot\files\" />
   </ItemGroup>
 
 </Project>

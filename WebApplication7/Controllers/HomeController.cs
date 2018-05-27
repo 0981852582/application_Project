@@ -10,7 +10,8 @@ namespace WebApplication7.Controllers
         /// Khai báo biến và Khởi tạo dữ liệu
         /// </summary>
         /// 
-        private readonly AccessContext _context;
+        public static AccessContext _context;
+        public static string FullPermission = "Admin";
         public HomeController(AccessContext context)
         {
             _context = context;

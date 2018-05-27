@@ -14,6 +14,7 @@ namespace QUANLYBANHANG.Models
         public DbSet<PermissionOfPage> PermissionOfPage { get; set; }
         public DbSet<MenuOfPage> MenuOfPage { get; set; }
         public DbSet<Account> Account { get; set; }
+        public DbSet<Files> Files { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Permission>().ToTable("Permission");
@@ -22,6 +23,8 @@ namespace QUANLYBANHANG.Models
             modelBuilder.Entity<PermissionOfPage>().ToTable("PermissionOfPage");
             modelBuilder.Entity<MenuOfPage>().ToTable("MenuOfPage");
             modelBuilder.Entity<Account>().ToTable("Account");
+            modelBuilder.Entity<Account>().Property(b => b.Guid).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Files>().ToTable("Files");
         }
     }
 }

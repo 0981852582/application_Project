@@ -48,6 +48,18 @@
                 {{model.dateOfBirth | fdate : 'DD/MM/YYYY'}}
             </div>
         </div>
+        <br />
+        <div class="row" ng-if="model.files.length > 0">
+            <div class="col-lg-2">
+                <label>Tệp đính kèm</label>
+            </div>
+            <div class="col-lg-8">
+                <a ng-repeat="item in model.files" href="{{item.url}}" target="_blank">
+                    {{item.fileName}}
+                </a>
+                <br />
+            </div>
+        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-danger" ng-click="cancel()">Đóng</button>

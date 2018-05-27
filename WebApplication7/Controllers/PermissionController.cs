@@ -282,7 +282,7 @@ namespace WebApplication7.Controllers
                 {
                     foreach (var item in data)
                     {
-                        if (AccountController.AccountLogin.PermissionCode.Trim() == "Admin")
+                        if (AccountController.AccountLogin.PermissionCode.Trim() == HomeController.FullPermission)
                         {
                             item.Status = true;
                         }
@@ -328,7 +328,7 @@ namespace WebApplication7.Controllers
                 msg.Error = true;
                 return Json(msg);
             }
-            else if (AccountController.AccountLogin.PermissionCode != "Admin")
+            else if (AccountController.AccountLogin.PermissionCode != HomeController.FullPermission)
             {
                 msg.Title = "Tài khoản không có quyền thực hiện chức năng này";
                 msg.Error = true;
@@ -376,7 +376,7 @@ namespace WebApplication7.Controllers
             {
                 if (AccountController.AccountLogin != null)
                 {
-                    if (AccountController.AccountLogin.PermissionCode != "Admin")
+                    if (AccountController.AccountLogin.PermissionCode != HomeController.FullPermission)
                     {
                         var count = _context.MenuOfPage.Count(x =>
                         x.urlCode == urlPage
@@ -396,7 +396,6 @@ namespace WebApplication7.Controllers
                     {
                         msg.Error = false;
                     }
-
                 }
                 else
                 {
@@ -445,7 +444,7 @@ namespace WebApplication7.Controllers
                 msg.Error = true;
                 return Json(msg);
             }
-            else if(AccountController.AccountLogin.PermissionCode != "Admin")
+            else if(AccountController.AccountLogin.PermissionCode != HomeController.FullPermission)
             {
                 msg.Title = "Tài khoản không có quyền thực hiện chức năng này";
                 msg.Error = true;

@@ -8,7 +8,7 @@ app.controller('mainAccount', function ($scope, $rootScope, $http, $uibModal, $t
         getItem: '/Account/getItemAccount/',
         getListItem: '/Account/getListAccount/'
     }
-    
+
     $scope.init = function () {
         $scope.title = "Quản lý tài khoản.";
         // required
@@ -133,7 +133,7 @@ app.controller('mainAccount', function ($scope, $rootScope, $http, $uibModal, $t
         });
     };
     // call confirm delete
-    $scope.dialogDelete = function (parameter,title) {
+    $scope.dialogDelete = function (parameter, title) {
         Comfirm("Bạn có chắc chắn muốn xóa quyền [ " + title + " ] ?", function (rs) {
             if (rs) {
                 var object = {
@@ -158,7 +158,7 @@ app.controller('mainAccount', function ($scope, $rootScope, $http, $uibModal, $t
             rule: {
                 Required: true,
                 Maxlength: 25,
-                Special : true
+                Special: true
             },
             message: {
                 Required: 'Tài khoản không được để trống.',
@@ -280,15 +280,27 @@ app.controller('InsertAccount', function ($scope, $http, $location, $uibModalIns
     $scope.submit = function () {
         $rootScope.validateForm($scope.model, function (rs) {
             if (rs) {
-                $http.post($rootScope.url.add, $scope.model).success(function (rs) {
-                    if (rs.error) {
-                        toaster.pop("error", "", rs.title, 1000, "");
-                    } else {
-                        toaster.pop("success", "", rs.title, 1000, "");
-                        $rootScope.reload();
-                        $scope.cancel();
+                var formData = new FormData();
+                // append content
+                formData.append('data', JSON.stringify($scope.model));
+                // Attach file
+                formData.append('files', $('#Files')[0].files[0]);
+                $.ajax({
+                    url: $rootScope.url.add,
+                    data: formData,
+                    type: 'POST',
+                    contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
+                    processData: false, // NEEDED, DON'T OMIT THIS
+                    success: function (rs) {
+                        if (rs.error) {
+                            toaster.pop("error", "", rs.title, 1000, "");
+                        } else {
+                            toaster.pop("success", "", rs.title, 1000, "");
+                            $rootScope.reload();
+                            $scope.cancel();
+                        }
                     }
-                });
+                })
             }
         }, true);
 

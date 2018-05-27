@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using QUANLYBANHANG.Models;
 using WebApplication7.Models;
@@ -15,7 +16,7 @@ namespace WebApplication7.Controllers
         /// </summary>
         private string urlPermission { get; set; }
         private readonly AccessContext _context;
-        private PermissionController permission { get; set; }
+        public PermissionController permission { get; set; }
         /// <summary>
         /// Khởi tạo các đối tượng
         /// </summary>
@@ -23,6 +24,7 @@ namespace WebApplication7.Controllers
         /// 
         public MenuBarController(AccessContext context)
         {
+            //MyActionFilterAttribute._context = context;
             _context = context;
             permission = new PermissionController(context);
             urlPermission = "menuBar";
@@ -33,6 +35,7 @@ namespace WebApplication7.Controllers
         /// <param name="parameter">JTable</param>
         /// <returns>object</returns>
         [HttpPost]
+        [MyActionFilter(permission = "menuBar", function = "Access")]
         public object getListMenuBar([FromBody] JTable parameter)
         {
             Message msg = permission.checkPermissionMenu(urlPermission, "Access");
@@ -99,7 +102,7 @@ namespace WebApplication7.Controllers
                 msg.Error = true;
                 return Json(msg);
             }
-            else if (AccountController.AccountLogin.PermissionCode != "Admin")
+            else if (AccountController.AccountLogin.PermissionCode != HomeController.FullPermission)
             {
                 msg.Title = "Tài khoản không có quyền thực hiện chức năng này";
                 msg.Error = true;
@@ -312,7 +315,7 @@ namespace WebApplication7.Controllers
             Message msg = new Message { Error = false };
             try
             {
-                if (AccountController.AccountLogin.PermissionCode != "Admin")
+                if (AccountController.AccountLogin.PermissionCode != HomeController.FullPermission)
                 {
                     var data = _context.MenuOfPage.Select(x => new getViewMenuBarEntity
                     {
@@ -330,7 +333,7 @@ namespace WebApplication7.Controllers
                     msg.result = data;
                     msg.Title = "Lấy menuBar thành công.";
                 }
-                else if(AccountController.AccountLogin.PermissionCode == "Admin")
+                else if (AccountController.AccountLogin.PermissionCode == HomeController.FullPermission)
                 {
                     var data = _context.MenuBar.Select(x => new getViewMenuBarEntity
                     {
